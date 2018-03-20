@@ -1,7 +1,3 @@
-import os
-import sys
-sys.path.append(os.path.join(os.path.dirname(__file__), "libs"))
-
 import logging
 from sanic import Sanic, log
 from sanic.response import json
@@ -9,13 +5,21 @@ from responder import Movies
 from models import IMF
 from datasets import RatingsData, MovieMetaData
 from utils import chunks, Redis
+from sanic_jinja2 import SanicJinja2
+from sanic_session import InMemorySessionInterface
 
 # disables existing root logger and allows for sanic's default format w/no duplicates
 log.LOGGING_CONFIG_DEFAULTS['loggers']['sanic.access']['propagate'] = False
 
 app = Sanic()
+jinja = SanicJinja2(app)
+
+app.static('/favicon.ico', 'static/favicon.ico', name='icon')
+
+session = InMemorySessionInterface(cookie_name=app.name, prefix=app.name)
 
 logger = logging.getLogger('pyrecs')
+
 
 @app.listener('before_server_start')
 async def prepare_metadata(app, loop):
@@ -42,12 +46,25 @@ async def prepare_db(app, loop):
     app.redis = Redis().redis
     app.movies = Movies(redis=app.redis)
 
+
+@app.middleware('request')
+async def add_session_to_request(request):
+    # before each request initialize a session
+    # using the client's request
+    await session.open(request)
+
+@app.middleware('response')
+async def save_session(request, response):
+    # after each request save the session,
+    # pass the response to set client cookies
+    await session.save(request, response)
+
+
 @app.route("/api/metadata")
 async def classmeta(request):
     movies = request.args.getlist('movies')
     pipe = app.movies.fetch(movies)
     return json({'movies': pipe.execute()})
-
 
 @app.route('/api/similar')
 async def similar(request):
@@ -71,6 +88,12 @@ async def similar(request):
         response[movie]['similar'] = chunk[1:]
 
     return json(response)
+
+
+@app.route('/')
+async def index(request):
+    request['session']['user'] = 'pyrecs-test'
+    return jinja.render('index.html', request, greetings='🚧🚧🚧🚧🚧🚧🚧🚧🚧🚧🚧')
 
 
 if __name__ == "__main__":

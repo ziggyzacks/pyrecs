@@ -16,25 +16,31 @@ class Util: pass
 
 
 class LogMixin(object):
+    logging.getLogger('boto3').setLevel(logging.WARNING)
+    logging.getLogger('botocore').setLevel(logging.WARNING)
+    logging.getLogger('nose').setLevel(logging.WARNING)
+    logging.getLogger('s3transfer').setLevel(logging.WARNING)
 
     @property
     def logger(self):
         name = '.'.join([self.__module__, self.__class__.__name__])
         return logging.getLogger(name)
 
+
 class Redis(Util, LogMixin):
     """ redis connection class """
-    HOST = '35.196.81.228' if os.environ.get('ENV') is not None else 'localhost'
+    HOST = 'localhost'
     PORT = 6379
 
     def __init__(self, host=HOST, port=PORT):
         self.host = host
         self.port = port
-        self._redis = StrictRedis(host=host, port=port, decode_responses=True)
+        self._redis = StrictRedis(host=host, port=port, decode_responses=True, socket_connect_timeout=3)
 
     @property
     def redis(self):
         return self._redis
+
 
 class S3Resource(Util, LogMixin):
     """ helper class for dealing with interactions with S3 """
