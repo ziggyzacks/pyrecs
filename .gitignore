@@ -243,5 +243,5 @@ crashlytics-build.properties
 fabric.properties
 
 .idea/
-
 data/
+.DS_Store

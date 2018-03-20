@@ -10,11 +10,15 @@ RUN pip install awscli \
                 sanic_jinja2 \
                 sanic_session
 
+RUN apk update && apk add nginx
+
 WORKDIR ${HOME}
 COPY . .
 
-EXPOSE 8000
+EXPOSE 80
 
-CMD mkdir data
+CMD mkdir data logs
 CMD gsuitl cp -r gs://pyrecs-198313.appspot.com/data/ data/
-CMD /bin/ash -c "redis-server --daemonize yes && python app.py"
+CMD /bin/ash -c "redis-server --daemonize yes && \
+                 nginx -p ${HOME} -c nginx/nginx.conf && \
+                 python app.py"
