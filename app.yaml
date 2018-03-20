@@ -1,13 +1,17 @@
+service: pyrecs
 runtime: python
 env: flex
-entrypoint: gunicorn --bind :$PORT main:app --worker-class sanic.worker.GunicornWorker
+entrypoint: gunicorn --timeout 180 --bind :$PORT app:app --worker-class sanic.worker.GunicornWorker
 
 runtime_config:
   python_version: 3
+
+env_variables:
+  ENV: "PROD"
 
 manual_scaling:
   instances: 1
 resources:
   cpu: 1
-  memory_gb: 0.5
+  memory_gb: 3
   disk_size_gb: 10
