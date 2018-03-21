@@ -1,6 +1,6 @@
 import logging
 from sanic import Sanic, log
-from sanic.response import json
+from sanic.response import json, redirect
 from responder import Movies
 from models import IMF
 from datasets import RatingsData, MovieMetaData
@@ -12,10 +12,9 @@ from sanic_session import InMemorySessionInterface
 log.LOGGING_CONFIG_DEFAULTS['loggers']['sanic.access']['propagate'] = False
 
 app = Sanic()
+app.static('/static', './static')
+
 jinja = SanicJinja2(app)
-
-app.static('/favicon.ico', 'static/favicon.ico', name='icon')
-
 session = InMemorySessionInterface(cookie_name=app.name, prefix=app.name)
 
 logger = logging.getLogger('pyrecs')
@@ -53,6 +52,7 @@ async def add_session_to_request(request):
     # using the client's request
     await session.open(request)
 
+
 @app.middleware('response')
 async def save_session(request, response):
     # after each request save the session,
@@ -65,6 +65,7 @@ async def classmeta(request):
     movies = request.args.getlist('movies')
     pipe = app.movies.fetch(movies)
     return json({'movies': pipe.execute()})
+
 
 @app.route('/api/similar')
 async def similar(request):
@@ -93,7 +94,7 @@ async def similar(request):
 @app.route('/')
 async def index(request):
     request['session']['user'] = 'pyrecs-test'
-    return jinja.render('index.html', request, greetings='🚧🚧🚧🚧🚧🚧🚧🚧🚧🚧🚧')
+    return jinja.render('index.html', request, greetings='🚧🚧🚧🚧🚧🚧🚧🚧')
 
 
 if __name__ == "__main__":
