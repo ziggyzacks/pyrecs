@@ -72,7 +72,8 @@ async def similar(request):
     response = {}
 
     movies = request.args.getlist('movies')
-    n = request.args.get('n', 10)
+    n = request.args.get('n')
+    n = int(n) if n is not None else 10
 
     idxs = app.movies.movie_to_index(movies)
     similar = app.model.similar(idxs, n)
