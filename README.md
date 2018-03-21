@@ -4,10 +4,7 @@ rex w/python
 
 ## API
 ```bash
-❱ time curl 'http://pyrecs.com/api/metadata?movies=1' | jq                                                                                                                                                               +14734 18:08 ❰─┘
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-100   111  100   111    0     0   1544      0 --:--:-- --:--:-- --:--:--  1608
+❱ curl 'http://pyrecs.com/api/metadata?movies=1' | jq                                                                                                                                                               +14734 18:08 ❰─┘
 {
   "movies": [
     {
@@ -23,15 +20,10 @@ rex w/python
     }
   ]
 }
-curl 'http://pyrecs.com/api/metadata?movies=1'  0.00s user 0.00s system 10% cpu 0.080 total
-jq  0.00s user 0.00s system 5% cpu 0.080 total
 ```
 
 ```bash
-❱ time curl 'http://pyrecs.com/api/similar?movies=1&n=5' | jq                                                                                                                                                            +14735 18:09 ❰─┘
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-100   586  100   586    0     0   8234      0 --:--:-- --:--:-- --:--:--  8492
+❱ curl 'http://pyrecs.com/api/similar?movies=1&n=5' | jq                                                                                                                                                            +14735 18:09 ❰─┘
 {
   "1": {
     "metadata": {
@@ -100,8 +92,6 @@ jq  0.00s user 0.00s system 5% cpu 0.080 total
     ]
   }
 }
-curl 'http://pyrecs.com/api/similar?movies=1&n=5'  0.00s user 0.00s system 10% cpu 0.080 total
-jq  0.00s user 0.00s system 7% cpu 0.080 total
 ```
 
 ## Development
