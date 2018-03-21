@@ -63,8 +63,9 @@ async def save_session(request, response):
 @app.route("/api/metadata")
 async def classmeta(request):
     movies = request.args.getlist('movies')
-    pipe = app.movies.fetch(movies)
-    return json({'movies': pipe.execute()})
+    fields = request.args.getlist('fields')
+    results = app.movies.fetch(movies, fields=fields)
+    return json({'movies': results})
 
 
 @app.route('/api/similar')
@@ -72,22 +73,19 @@ async def similar(request):
     response = {}
 
     movies = request.args.getlist('movies')
+    fields = request.args.getlist('fields')
     n = request.args.get('n')
     n = int(n) if n is not None else 10
 
     idxs = app.movies.movie_to_index(movies)
     similar = app.model.similar(idxs, n)
 
-    # use pipeline to minimize network traffic
-    pipe = app.redis.pipeline()
-    for sims in similar:
-        pipe = app.movies.fetch(sims, pipe=pipe, from_index=True)
-
-    # iterate through chunked response building up dict
-    for movie, chunk in zip(movies, chunks(pipe.execute(), n + 1)):
-        response[movie] = {}
-        response[movie]['metadata'] = chunk[0]
-        response[movie]['similar'] = chunk[1:]
+    for movie, sims in zip(movies, similar):
+        metadata = app.movies.fetch(sims, fields=fields, from_index=True)
+        response[movie] = {
+            'metadata': metadata[0],  # first element will be movie itself
+            'similar': metadata[1:]
+        }
 
     return json(response)
 
