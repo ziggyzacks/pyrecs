@@ -2,14 +2,15 @@
 rex w/python
 
 
-## Development
+## API
 ```bash
-# current docker image
-docker run -p 8000:8000 gcr.io/pyrecs-198313/api
+curl http://pyrecs.com/api/similar?movies=<int>
+curl http://pyrecs.com/api/metadata?movies=<int>
 ```
 
+## Development
+
 ```bash
-# building, tagging, & pushing
 docker build -t pyrecs/api .
 docker tag pyrecs/api gcr.io/pyrecs-198313/api
 gcloud docker -- push gcr.io/pyrecs-198313/api
