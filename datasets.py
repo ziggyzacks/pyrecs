@@ -25,7 +25,7 @@ class Dataset(object):
 
 
 class MovieMetaData(Dataset, LogMixin):
-    __all__ = ['movies.csv']
+    FILES = ['movies.csv']
 
     def __init__(self, **kwargs):
         super().__init__()
@@ -56,8 +56,8 @@ class MovieMetaData(Dataset, LogMixin):
     @timeit
     def load(cls, persist=True):
         attrs = {}
-        s3paths = ['/'.join((S3BASEPATH, fp)) for fp in cls.__all__]
-        localpaths = ['/'.join((LOCALBASEPATH, fp)) for fp in cls.__all__]
+        s3paths = ['/'.join((S3BASEPATH, fp)) for fp in cls.FILES]
+        localpaths = ['/'.join((LOCALBASEPATH, fp)) for fp in cls.FILES]
 
         if all(os.path.exists(p) for p in localpaths):
             paths = localpaths
@@ -112,7 +112,7 @@ class MovieMetaData(Dataset, LogMixin):
 
 
 class RatingsData(Dataset, LogMixin):
-    __all__ = ['ratings.csv']
+    FILES = ['ratings.csv']
 
     def __init__(self, **kwargs):
         super().__init__()
@@ -129,8 +129,8 @@ class RatingsData(Dataset, LogMixin):
     @timeit
     def load(cls, cutoff=4, persist=True):
         attrs = {}
-        s3paths = ['/'.join((S3BASEPATH, fp)) for fp in cls.__all__]
-        localpaths = ['/'.join((LOCALBASEPATH, fp)) for fp in cls.__all__]
+        s3paths = ['/'.join((S3BASEPATH, fp)) for fp in cls.FILES]
+        localpaths = ['/'.join((LOCALBASEPATH, fp)) for fp in cls.FILES]
 
         if all(os.path.exists(p) for p in localpaths):
             paths = localpaths

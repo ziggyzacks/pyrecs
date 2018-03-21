@@ -32,7 +32,7 @@ class Model(object):
 
 
 class IMF(Model, LogMixin):
-    __all__ = ['similar_items_index', 'recommend_index']
+    INDICES = ['similar_items_index', 'recommend_index']
 
     def __init__(self, **kwargs):
         super().__init__()
@@ -40,7 +40,7 @@ class IMF(Model, LogMixin):
             setattr(self, key, value)
 
     def tos3(self):
-        for key in self.__all__:
+        for key in self.INDICES:
             self.model.__dict__[key].saveIndex(key)
             self.model.__dict__[key] = None
             self.upload(key=key, filename=key, config=self.config)
